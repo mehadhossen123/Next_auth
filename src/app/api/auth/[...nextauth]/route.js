@@ -1,8 +1,10 @@
 import { connect } from "@/lib/dbConndect";
 import NextAuth from "next-auth";
-// import GithubProvider from "next-auth/providers/github";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 
 
 
@@ -39,6 +41,14 @@ export const authOptions = {
         return null;
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
 
     // ...add more providers here
   ],
@@ -46,19 +56,18 @@ export const authOptions = {
     async signIn({ user, account, profile, email, credentials }) {
       return true;
     },
-    async redirect({ url, baseUrl }) {
-      return baseUrl;
-    },
+    // async redirect({ url, baseUrl }) {
+    //   return baseUrl;
+    // },
     async session({ session, token, user }) {
-      if(token){
-        session.role=token.role;
+      if (token) {
+        session.role = token.role;
       }
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
-      if(user){
-        token.email=user.email,
-        token.role=user.role
+      if (user) {
+        (token.email = user.email), (token.role = user.role);
       }
       return token;
     },
