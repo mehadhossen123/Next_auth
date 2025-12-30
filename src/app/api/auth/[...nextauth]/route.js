@@ -54,8 +54,32 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
+    try{
+       const payload = {
+       ...user,
+       provider: account.provider,
+       providerId: account.providerAccountId,
+       createdAt:new Date().toISOString(),
+       role:"user",
+
+     };
+     const isExistUser = await connect("users").findOne({
+       email: user?.email,
+       providerId: account?.providerAccountId,
+     });
+     if(!user.email){
+      return false;
+     }
+     if(!isExistUser){
+      const result=await connect("users").insertOne(payload)
+     }
       return true;
+    }
+    catch(error){
+      return false
+    }
     },
+    
     // async redirect({ url, baseUrl }) {
     //   return baseUrl;
     // },
